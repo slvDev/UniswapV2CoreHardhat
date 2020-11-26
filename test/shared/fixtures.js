@@ -1,11 +1,9 @@
+const { ethers, waffle } = require("hardhat");
 
-const overrides = {
-        gasLimit: 9999999
-    }
-
-const factoryFixture = async ([wallet], _) => {
-        const factory = await deployContract(wallet, UniswapV2Factory, [wallet.address], overrides)
-        return { factory }
+const factoryFixture = async ([owner, addr1]) => {
+        const Token = await ethers.getContractFactory("UniswapV2Factory")
+        const factory = await Token.deploy(owner.address)
+        return factory
     }
 
 module.exports = {
