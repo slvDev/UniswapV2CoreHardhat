@@ -5,7 +5,7 @@ const { BigNumber } = ethers;
 const { createFixtureLoader } = waffle;
 const { factoryFixture } = require('./shared/fixtures');
 
-describe("UniswapV2ERC20", async function() {
+describe("UniswapV2Factory", async function() {
     let factory
     const TEST_ADDRESSES = [
         '0x1000000000000000000000000000000000000000',
@@ -15,8 +15,7 @@ describe("UniswapV2ERC20", async function() {
     const loadFixture = createFixtureLoader([owner, addr1])
     
     beforeEach(async function () {
-        const fixture = await loadFixture(factoryFixture)
-        factory = fixture.factory
+        factory = await loadFixture(factoryFixture)
     })
 
     it('feeTo, feeToSetter, allPairsLength', async () => {
