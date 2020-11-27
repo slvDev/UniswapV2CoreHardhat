@@ -4,11 +4,12 @@ const { keccak256, hexlify, defaultAbiCoder, toUtf8Bytes } = ethers.utils;
 const { MaxUint256 } = ethers.constants;
 const { BigNumber } = ethers;
 const { ecsign } = require("ethereumjs-util");
-const { getApprovalDigest } = require('./shared/utilities');
+const { expandTo18Decimals, getApprovalDigest } = require('./shared/utilities');
+
+const TOTAL_SUPPLY = expandTo18Decimals(10000)
+const TEST_AMOUNT = expandTo18Decimals(10)
 
 describe("UniswapV2ERC20", function() {
-    const TOTAL_SUPPLY = 1000
-    const TEST_AMOUNT = 10
     let Token, erc20, owner, addr1, addr2, addr3
 
     beforeEach(async function () {
@@ -57,12 +58,12 @@ describe("UniswapV2ERC20", function() {
         await expect(erc20.transfer(addr1.address, TEST_AMOUNT))
             .to.emit(erc20, 'Transfer')
             .withArgs(owner.address, addr1.address, TEST_AMOUNT)
-        expect(await erc20.balanceOf(owner.address)).to.eq(TOTAL_SUPPLY - TEST_AMOUNT)
+        expect(await erc20.balanceOf(owner.address)).to.eq(TOTAL_SUPPLY.sub(TEST_AMOUNT))
         expect(await erc20.balanceOf(addr1.address)).to.eq(TEST_AMOUNT)
     })
 
     it('transfer:fail', async () => {
-        await expect(erc20.transfer(addr1.address, TOTAL_SUPPLY + 1 )).to.be.reverted // ds-math-sub-underflow
+        await expect(erc20.transfer(addr1.address, TOTAL_SUPPLY.add(1))).to.be.reverted // ds-math-sub-underflow
         await expect(erc20.connect(addr1).transfer(owner.address, 1)).to.be.reverted // ds-math-sub-underflow
     })
 
@@ -72,7 +73,7 @@ describe("UniswapV2ERC20", function() {
             .to.emit(erc20, 'Transfer')
             .withArgs(owner.address, addr1.address, TEST_AMOUNT)
         expect(await erc20.allowance(owner.address, addr1.address)).to.eq(0)
-        expect(await erc20.balanceOf(owner.address)).to.eq(TOTAL_SUPPLY - TEST_AMOUNT)
+        expect(await erc20.balanceOf(owner.address)).to.eq(TOTAL_SUPPLY.sub(TEST_AMOUNT))
         expect(await erc20.balanceOf(addr1.address)).to.eq(TEST_AMOUNT)
     })
 
@@ -82,7 +83,7 @@ describe("UniswapV2ERC20", function() {
             .to.emit(erc20, 'Transfer')
             .withArgs(owner.address, addr1.address, TEST_AMOUNT)
         expect(await erc20.allowance(owner.address, addr1.address)).to.eq(MaxUint256)
-        expect(await erc20.balanceOf(owner.address)).to.eq(TOTAL_SUPPLY - TEST_AMOUNT)
+        expect(await erc20.balanceOf(owner.address)).to.eq(TOTAL_SUPPLY.sub(TEST_AMOUNT))
         expect(await erc20.balanceOf(addr1.address)).to.eq(TEST_AMOUNT)
     })
 

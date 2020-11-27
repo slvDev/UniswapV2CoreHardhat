@@ -1,4 +1,10 @@
-const { keccak256, defaultAbiCoder, toUtf8Bytes, solidityPack } = require("ethers").utils;
+const { BigNumber } = require("ethers");
+
+const { keccak256, defaultAbiCoder, toUtf8Bytes, solidityPack, getAddress } = require("ethers").utils;
+
+const expandTo18Decimals = n => {
+  return BigNumber.from(n).mul(BigNumber.from(10).pow(18))
+}
 
 const PERMIT_TYPEHASH = keccak256(
         toUtf8Bytes('Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)')
@@ -40,6 +46,20 @@ const getApprovalDigest = async (token, approve, nonce, deadline) => {
     )
 }
 
+const getCreate2Address = (factoryAddress, [tokenA, tokenB], bytecode) => {
+  const [token0, token1] = tokenA < tokenB ? [tokenA, tokenB] : [tokenB, tokenA]
+  const create2Inputs = [
+    '0xff',
+    factoryAddress,
+    keccak256(solidityPack(['address', 'address'], [token0, token1])),
+    keccak256(bytecode)
+  ]
+  const sanitizedInputs = `0x${create2Inputs.map(i => i.slice(2)).join('')}`
+  return getAddress(`0x${keccak256(sanitizedInputs).slice(-40)}`)
+}
+
 module.exports = {
-    getApprovalDigest
+    getApprovalDigest,
+    getCreate2Address,
+    expandTo18Decimals
 }
