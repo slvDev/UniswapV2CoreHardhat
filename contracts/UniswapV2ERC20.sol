@@ -3,9 +3,6 @@ pragma solidity =0.5.16;
 import './interfaces/IUniswapV2ERC20.sol';
 import './libraries/SafeMath.sol';
 
-import "hardhat/console.sol";
-
-
 contract UniswapV2ERC20 is IUniswapV2ERC20 {
     using SafeMath for uint;
 
@@ -61,7 +58,6 @@ contract UniswapV2ERC20 is IUniswapV2ERC20 {
         balanceOf[from] = balanceOf[from].sub(value);
         balanceOf[to] = balanceOf[to].add(value);
         emit Transfer(from, to, value);
-        console.log("from: %s | To: %s | value : %s ", from, to, value);
     }
 
     function approve(address spender, uint value) external returns (bool) {

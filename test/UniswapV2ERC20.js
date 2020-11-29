@@ -10,10 +10,10 @@ const TOTAL_SUPPLY = expandTo18Decimals(10000)
 const TEST_AMOUNT = expandTo18Decimals(10)
 
 describe("UniswapV2ERC20", function() {
-    let Token, erc20, owner, addr1, addr2, addr3
+    let Token, erc20, owner, addr1
 
     beforeEach(async function () {
-        [owner, addr1, addr2, addr3] = await ethers.getSigners();
+        [owner, addr1] = await ethers.getSigners();
         Token = await ethers.getContractFactory("ERC20")
         erc20 = await Token.deploy(TOTAL_SUPPLY)
         await erc20.deployed()

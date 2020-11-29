@@ -1,5 +1,4 @@
 const { BigNumber } = require("ethers");
-
 const { keccak256, defaultAbiCoder, toUtf8Bytes, solidityPack, getAddress } = require("ethers").utils;
 
 const expandTo18Decimals = n => {
@@ -58,8 +57,29 @@ const getCreate2Address = (factoryAddress, [tokenA, tokenB], bytecode) => {
   return getAddress(`0x${keccak256(sanitizedInputs).slice(-40)}`)
 }
 
+const mineBlock = async (provider, timestamp) => {
+  await new Promise(async (resolve, reject) => {
+    provider._hardhatProvider.sendAsync(
+      { jsonrpc: '2.0', method: 'evm_mine', params: [timestamp] },
+      (error, result) => {
+        if (error) {
+          reject(error)
+        } else {
+          resolve(result)
+        }
+      }
+    )
+  })
+}
+
+const encodePrice = (reserve0, reserve1) => {
+  return [reserve1.mul(BigNumber.from(2).pow(112)).div(reserve0), reserve0.mul(BigNumber.from(2).pow(112)).div(reserve1)]
+}
+
 module.exports = {
     getApprovalDigest,
     getCreate2Address,
-    expandTo18Decimals
+    expandTo18Decimals,
+    mineBlock,
+    encodePrice
 }

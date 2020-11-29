@@ -54,7 +54,8 @@ describe("UniswapV2Factory", async function() {
     it('createPair:reverse', async () => {
         await createPair(Array.from(TEST_ADDRESSES.slice().reverse()))
     })
-
+    
+    // Test to gas is not a constant
     // it('createPair:gas', async () => {
     //     const tx = await factory.createPair(...TEST_ADDRESSES)
     //     const receipt = await tx.wait()
